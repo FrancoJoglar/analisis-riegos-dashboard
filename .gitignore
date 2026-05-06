@@ -1,0 +1,25 @@
+# Database
+riego.db
+
+# Python virtual environment / embedded
+python/
+
+# Cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment
+.env
+.venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Streamlit secrets
+.streamlit/secrets.toml
