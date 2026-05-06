@@ -211,10 +211,31 @@ elif group_by == "Especie":
 else:
     combined = combined.sort_values('Solicitado', ascending=False)
 
+fmt = ",.0f"
+
 fig = make_subplots(rows=1, cols=1)
-fig.add_trace(go.Bar(x=combined[group_col], y=combined['Solicitado'], name='Solicitado', marker_color='#3498db', offsetgroup=0))
-fig.add_trace(go.Bar(x=combined[group_col], y=combined['Ejecutado'], name='Ejecutado', marker_color='#27ae60', offsetgroup=1))
-fig.update_layout(title=f"Solicitado vs Ejecutado por {group_label}", barmode='group', height=400, legend=dict(yanchor="top", y=0.99, xanchor="right", x=0.99), template='plotly_white')
+fig.add_trace(go.Bar(
+    x=combined[group_col], y=combined['Solicitado'],
+    name='Solicitado', marker_color='#3498db', offsetgroup=0,
+    text=combined['Solicitado'], texttemplate=f'%{{text:{fmt}}}', textposition='outside',
+    textfont=dict(size=12, family='Arial Black'),
+    hovertemplate=f'<b>%{{x}}</b><br>Solicitado: %{{y:{fmt}}} m³<extra></extra>'
+))
+fig.add_trace(go.Bar(
+    x=combined[group_col], y=combined['Ejecutado'],
+    name='Ejecutado', marker_color='#27ae60', offsetgroup=1,
+    text=combined['Ejecutado'], texttemplate=f'%{{text:{fmt}}}', textposition='outside',
+    textfont=dict(size=12, family='Arial Black'),
+    hovertemplate=f'<b>%{{x}}</b><br>Ejecutado: %{{y:{fmt}}} m³<extra></extra>'
+))
+fig.update_layout(
+    title=dict(text=f"Solicitado vs Ejecutado por {group_label}", font=dict(size=16, family='Arial Black')),
+    barmode='group', height=450,
+    legend=dict(yanchor="top", y=0.99, xanchor="right", x=0.99, font=dict(size=13)),
+    template='plotly_white',
+    yaxis=dict(tickformat=fmt, title=dict(text='m³', font=dict(size=14, family='Arial Black'))),
+    xaxis=dict(tickfont=dict(size=11)),
+)
 st.plotly_chart(fig, width='stretch')
 
 # =============================================================================
@@ -256,9 +277,23 @@ with st.expander("Metricas Avanzadas"):
         t_merged = pd.merge(t_sol, t_ejec, on=period_key, how='outer').fillna(0).sort_values(period_key)
 
         fig_trend = go.Figure()
-        fig_trend.add_trace(go.Scatter(x=t_merged[period_key], y=t_merged['Solicitado'], mode='lines+markers', name='Solicitado', line=dict(color='#3498db', width=2)))
-        fig_trend.add_trace(go.Scatter(x=t_merged[period_key], y=t_merged['Ejecutado'], mode='lines+markers', name='Ejecutado', line=dict(color='#27ae60', width=2)))
-        fig_trend.update_layout(title=f"Tendencia {trend_gran.lower()}", height=350, template='plotly_white', hovermode='x unified')
+        fig_trend.add_trace(go.Scatter(
+            x=t_merged[period_key], y=t_merged['Solicitado'],
+            mode='lines+markers', name='Solicitado',
+            line=dict(color='#3498db', width=3),
+            hovertemplate=f'<b>%{{x}}</b><br>Solicitado: %{{y:,.,0f}} m³<extra></extra>'
+        ))
+        fig_trend.add_trace(go.Scatter(
+            x=t_merged[period_key], y=t_merged['Ejecutado'],
+            mode='lines+markers', name='Ejecutado',
+            line=dict(color='#27ae60', width=3),
+            hovertemplate=f'<b>%{{x}}</b><br>Ejecutado: %{{y:,.,0f}} m³<extra></extra>'
+        ))
+        fig_trend.update_layout(
+            title=dict(text=f"Tendencia {trend_gran.lower()}", font=dict(size=15, family='Arial Black')),
+            height=350, template='plotly_white', hovermode='x unified',
+            yaxis=dict(tickformat=',.0f', title=dict(text='m³', font=dict(size=13))),
+        )
         st.plotly_chart(fig_trend, width='stretch')
 
     with tab_heatmap:
@@ -363,9 +398,25 @@ with drill_col2:
         combined_month = pd.merge(by_month, by_month_e, on='Mes', how='outer').fillna(0).sort_values('Mes')
 
         fig2 = make_subplots(rows=1, cols=1)
-        fig2.add_trace(go.Bar(x=combined_month['Mes'], y=combined_month['Solicitado'], name='Solicitado', marker_color='#3498db'))
-        fig2.add_trace(go.Bar(x=combined_month['Mes'], y=combined_month['Ejecutado'], name='Ejecutado', marker_color='#27ae60'))
-        fig2.update_layout(title=f"Solicitado vs Ejecutado - {drill_label}", barmode='group', height=300, template='plotly_white')
+        fig2.add_trace(go.Bar(
+            x=combined_month['Mes'], y=combined_month['Solicitado'],
+            name='Solicitado', marker_color='#3498db',
+            text=combined_month['Solicitado'], texttemplate='%{text:,.0f}', textposition='outside',
+            textfont=dict(size=11, family='Arial Black'),
+            hovertemplate='<b>%{x}</b><br>Solicitado: %{y:,.0f} m³<extra></extra>'
+        ))
+        fig2.add_trace(go.Bar(
+            x=combined_month['Mes'], y=combined_month['Ejecutado'],
+            name='Ejecutado', marker_color='#27ae60',
+            text=combined_month['Ejecutado'], texttemplate='%{text:,.0f}', textposition='outside',
+            textfont=dict(size=11, family='Arial Black'),
+            hovertemplate='<b>%{x}</b><br>Ejecutado: %{y:,.0f} m³<extra></extra>'
+        ))
+        fig2.update_layout(
+            title=dict(text=f"Solicitado vs Ejecutado - {drill_label}", font=dict(size=14, family='Arial Black')),
+            barmode='group', height=320, template='plotly_white',
+            yaxis=dict(tickformat=',.0f', title=dict(text='m³', font=dict(size=12))),
+        )
         st.plotly_chart(fig2, width='stretch')
     else:
         st.info("Selecciona un equipo para ver el drill down")
