@@ -5,8 +5,8 @@ echo   ANALISIS RIEGOS 2025-2026
 echo   Dashboard Interactivo
 echo ==================================================
 echo.
-echo Abriendo en el navegador...
-echo Cierra la ventana del navegador para detener.
+echo Abriendo http://localhost:8501 en el navegador...
 echo.
-python\python.exe -m streamlit run app.py --server.headless true
+start http://localhost:8501
+python\python.exe -m streamlit run app.py
 pause

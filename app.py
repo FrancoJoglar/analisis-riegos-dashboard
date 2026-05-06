@@ -222,7 +222,7 @@ st.plotly_chart(fig, width='stretch')
 # =============================================================================
 st.subheader(f"Detalle por {group_label}")
 
-detailed = combined.copy()
+detailed = combined[[group_col, 'Solicitado', 'Ejecutado']].copy()
 detailed['Diferencia'] = detailed['Ejecutado'] - detailed['Solicitado']
 detailed['Cumplimiento %'] = (detailed['Ejecutado'] / detailed['Solicitado'] * 100).round(1)
 detailed = detailed.sort_values('Solicitado', ascending=False)
